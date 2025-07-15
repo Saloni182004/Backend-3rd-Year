@@ -62,4 +62,3 @@ try{
 }}
 console.log(doMyTask());
 console.log("Start");
-console.log(doMyTask());
