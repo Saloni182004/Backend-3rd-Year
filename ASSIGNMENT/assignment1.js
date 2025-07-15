@@ -8,9 +8,9 @@ process.stdin.on("data", function (data) {
 
   fs.writeFile("../demo.txt", input, function (err) {
     if (err) {
-      console.log("Error writing file:", err);
+      console.log( err);
     } else {
-      console.log("Data written to demo.txt successfully!");
+      console.log("success!");
     }
   });
 });
