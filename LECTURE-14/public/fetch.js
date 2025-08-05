@@ -1,0 +1,69 @@
+// let Data;
+// function getUsersData(URL){
+//     fetch(URL)
+//     .then((res)=>{
+//         console.log(res);
+//         return res.json();
+//     })
+//     .then((data)=>{
+//         Data=data;
+//         console.log(data);
+//     })
+//     .catch((err)=>{
+//         console.log(err)
+//     })
+// }
+// getUsersData('https://jsonplaceholder.typicode.com/users')
+
+
+let Data;
+function getUsersData(URL) {
+  fetch(URL)
+    .then((res) => res.json())
+    .then((data) => {
+      Data = data;
+      let username = document.querySelector(".name");
+      for (let i = 0; i < Data.length; i++) {
+        let li = document.createElement('li');
+        li.innerHTML = `
+          <div>${Data[i].username}</div>
+        `;
+        username.appendChild(li);
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+}
+getUsersData('http://localhost:3000/users');
+
+function addUser(name,username,URL){
+  let data={
+    name:name,
+    username:username
+  }
+  fetch(URL,{
+    method:"POST",
+    header:{
+      "Content-Type":"applicatin/json"
+    },
+    body:JSON.stringify(data)
+  })
+  .then((res)=>{
+    return res.json();
+  })
+  .then((data)=>
+  console.log(data));
+}
+let regForm=document.querySelector(".register");
+let nampinput=document.querySelector(".name");
+let usernameinput=document.querySelector(".username");
+regForm.addEventListener('submit',function(e){
+  e.preventDefault();
+  let name=nameinput.value;
+  let username=usernameinput.value;
+  addUser(name,username,"http://localhost:3000/addUser");
+})
+
+
+
