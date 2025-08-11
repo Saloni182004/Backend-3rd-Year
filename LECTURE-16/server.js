@@ -78,7 +78,3 @@ app.listen(3000,()=>{
 +
 mongoose.connect('mongodb://127.0.0.1:27017/g26DB')
   .then(() => console.log('Connected!'));
-
-
-
-//userSchema ki file bnao model mein (email,username,password) server.js mein teen route bnao userpost krna user get krna or ik user ko get krna 
