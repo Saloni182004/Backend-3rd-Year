@@ -75,6 +75,6 @@ app.get("/users/:id", async (req, res) => {
 app.listen(3000,()=>{
     console.log("Server started");
 })
-+
+
 mongoose.connect('mongodb://127.0.0.1:27017/g26DB')
   .then(() => console.log('Connected!'));
