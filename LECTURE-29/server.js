@@ -6,7 +6,7 @@ const prisma=new PrismaClient();
 app.use(express.json());
 
 //CREATE USER
-app.post("/users",async(req,res)=>{
+app.post("/tweet/addUser",async(req,res)=>{
     try{
         const {name,email,password}=req.body;
         const newUser=await prisma.user.create({
@@ -18,19 +18,20 @@ app.post("/users",async(req,res)=>{
         });
         res.json({
             success:true,
-            message:"User created successfully",
+            message:"User added successfully",
             data:newUser
         });
     }catch(error){
         res.json({
             success:false,
-            message:"User not created due to some error"
+            message:error.message
         });
     }
 });
 
 //GET ALL USERS
-app.get("/users",async(req,res)=>{
+app.get("/tweet/allUsers",async(req,res)=>{
+    try{
     const users=await prisma.user.findMany({
         include:{
             tweet:true
@@ -41,12 +42,19 @@ app.get("/users",async(req,res)=>{
         message:"User fetched successfully",
         data:users
     });
+} catch(error){
+    res.json({
+        success:false,
+        message:error.message
+    })
+}
+
 })
 
-//GET USER BY ID
-app.get("/users/:id",async(req,res)=>{
+//USER BY ID
+app.get("/tweet/user/:id",async(req,res)=>{
     const {id}=req.params;
-    const oneUser=await prisma.user.findUnique({
+    const userExist=await prisma.user.findUnique({
         where:{
             id:Number(id)
         },
@@ -54,57 +62,123 @@ app.get("/users/:id",async(req,res)=>{
             tweet:true
         }
     });
-    if(!oneUser){
+    if(!userExist){
         res.json({
             success:false,
             message:"User not found"
         })
     }
-    res.json({
+
+    return res.json({
         success:true,
         message:"User found successfully",
-        data:oneUser
+        data:userExist
     });
 })
 
+// USER WITH SPECIFIC FIELDS
+app.get("/tweet/specificFields/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const user = await prisma.user.findUnique({
+      where: { id: Number(id) },
+      select: {
+        name: true,
+        email: true,
+        tweet: {
+          select: {
+            content: true
+          }
+        }
+      }
+    });
+
+    if (!user) {
+      return res.json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    return res.json({
+      success: true,
+      message: "Name, email, and tweets fetched",
+      data: user
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
+
 //UPDATE USER
-app.put("/users/:id",async(req,res)=>{
+app.put("/tweet/users/:id",async(req,res)=>{
     try{
         const {id}=req.params;
         const {name,email,password}=req.body;
-        const updatedUser=await prisma.user.update({
-            where:{
-                id:Number(id)
-            },
-            data:{
-                name:name,
-                email:email,
-                password:password
-            }
-        });
-        res.json({
-            success:true,
-            message:"User updated successfully",
-            data:updatedUser
-        });
+       const userExist=await prisma.user.findUnique({
+        where:{
+            id:Number(id)
+        }
+       })
+       if(!userExist){
+        return res.json({
+            success:false,
+            message:"User not found"
+        })
+       }
+
+       const updatedUser=await prisma.user.update({
+        where:{
+            id:Number(id)
+        },
+        data:{
+            name:name,
+            email:email,
+            password:password
+        }
+       })
+       return res.json({
+        success:true,
+        message:"User updated successfully",
+        data:updatedUser
+       })
+
     }catch(error){
         res.json({
             success:false,
-            message:"User not found"
+            message:error.message
         });
     }
 })
 
 //DELETE USER
-app.delete("/users/:id",async(req,res)=>{
+app.delete("/tweet/users/:id",async(req,res)=>{
     try{
         const {id}=req.params;
-        const deletedUser=await prisma.user.delete({
+        const userExist=await prisma.user.findUnique({
             where:{
                 id:Number(id)
             }
         })
-        res.json({
+
+        if(!userExist){
+            return res.json({
+                success:false,
+                message:"User not found"
+            })
+        }
+
+        const deletedUser= await prisma.user.delete({
+            where:{
+                id:Number(id)
+            }
+        })
+        return res.json({
             success: true, 
             message: "User deleted successfully!" ,
             data:deletedUser
@@ -112,20 +186,21 @@ app.delete("/users/:id",async(req,res)=>{
     } catch (error) {
         res.json({ 
             success: false,
-            message: "User not found" });
+            message:error.message
+         });
     }
 })
 
 //CREATE TWEET
-app.post("/tweets",async(req,res)=>{
+app.post("/tweet/addTweet",async(req,res)=>{
     try{
         const {content,userId}=req.body;
-        const user=await prisma.user.findUnique({ 
+        const userExist=await prisma.user.findUnique({ 
             where:{ 
                 id: Number(userId) 
             }
         });
-        if(!user){ 
+        if(!userExist){ 
             return res.json({
                 success: false, 
                 message: "User not found" 
@@ -145,70 +220,50 @@ app.post("/tweets",async(req,res)=>{
     }catch(error){
         res.json({
             success:false,
-            message:"Tweet not created"
+            message:error.message
         });
     }
 })
 
-
-//GET ALL TWEETS
-app.get("/tweets", async (req, res) => {
-    try{
-        const tweets = await prisma.tweet.findMany({
-        include: {  
-            user: true 
-        }
-    });
-    res.json({ 
-        success: true,  
-        data: tweets });
-    }catch(error){
-        res.json({
-            success:false,
-            message:"Tweet not found"
-        });
-    }
-});
-
 //GET TWEET BY ID
-app.get("/tweets/:id", async (req, res) => {
+app.get("/tweet/getTweet/:tweetId", async (req, res) => {
   try {
-    const { id } = req.params;
-    const oneTweet = await prisma.tweet.findUnique({
-      where: { id: Number(id) },
+    const {tweetId} = req.params;
+    const tweetExist = await prisma.tweet.findUnique({
+      where: { id: Number(tweetId) },
       include: { user: true }
     });
 
-    if (!oneTweet) {
+    if (!tweetExist) {
       return res.json({
         success: false,
         message: "Tweet not found"
       });
     }
 
-    res.json({
+    return res.json({
       success: true,
       message: "Tweet fetched successfully",
-      data: oneTweet
+      data: tweetExist
     });
   } catch (error) {
     console.error(error);
     res.json({
       success: false,
-      message: "Error fetching tweet"
+      message: error.message
     });
   }
 });
 
 //UPDATE TWEET
-app.put("/tweets/:id", async (req, res) => {
+app.put("/tweet/updateTweet/:tweetId", async (req, res) => {
     try{
-        const { id } = req.params;
+        const { tweetId } = req.params;
         const { userId, content } = req.body;
 
         const tweet = await prisma.tweet.findUnique({ 
             where: {
-                id: Number(id) 
+                id: Number(tweetId) 
             }
         });
         if (!tweet) {   
@@ -221,36 +276,37 @@ app.put("/tweets/:id", async (req, res) => {
         if (tweet.userId !== Number(userId)) {
             return res.json({   
                 success: false,     
-                message: "User not authorized to update this tweet" });
+                message: "You are not authorized to update this tweet" });
         }
 
         const updatedTweet = await prisma.tweet.update({
             where: {
-                id: Number(id)
+                id: Number(tweetId)
             },
-            data:{content }
+            data:{content}
         });
-        res.json({  
+        return res.json({  
             success: true, 
             message: "Tweet updated successfully",
-            data: updatedTweet });
+            data: updatedTweet
+         });
     }catch(error){
         res.json({
             success:false,
-            message:"Error"
+            message:error.message
         })
     }
 });
 
 //DELETE TWEET
-app.delete("/tweets/:id", async (req, res) => {
+app.delete("/tweets/:tweetId", async (req, res) => {
     try{
-        const { id } = req.params;
+        const { tweetId } = req.params;
         const { userId } = req.body;
 
         const tweet = await prisma.tweet.findUnique({ 
             where: {
-                id: Number(id) 
+                id: Number(tweetId) 
             }
         });
         if (!tweet) {
@@ -263,13 +319,13 @@ app.delete("/tweets/:id", async (req, res) => {
         if (tweet.userId !== Number(userId)) {
             return res.json({   
                 success: false, 
-                message: "User not authorized to delete this tweet" 
+                message: "You are not authorized to delete this tweet" 
             });
         }
 
         await prisma.tweet.delete({ 
             where: {    
-                id: Number(id) 
+                id: Number(tweetId) 
             }
         });
         res.json({ 
@@ -279,7 +335,7 @@ app.delete("/tweets/:id", async (req, res) => {
     }catch(error){
         res.json({
             success:false,
-            message:"Error"
+            message:error.message
         })
     };
 });

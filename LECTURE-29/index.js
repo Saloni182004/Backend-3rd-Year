@@ -26,11 +26,11 @@ async function addTweeet(content,userId){
     })
     return newTweet;
 }
-// addTweeet("This is my first tweet",1).then((data)=>{
-//     console.log("Tweet add successfully");
-// }).catch((error)=>{
-//     console.log("Error");
-// })
+addTweeet("This is my first tweet",1).then((data)=>{
+    console.log("Tweet add successfully");
+}).catch((error)=>{
+    console.log("Error");
+})
 
 //find all tweet whose userId is 1
 async function getOneTweet(userId){
@@ -41,11 +41,11 @@ async function getOneTweet(userId){
     })
     return oneTweet;
 }
-getOneTweet(1).then((data)=>{
-    console.log("Tweet",data);
-}).catch((error)=>{
-    console.log("Error");
-})
+// getOneTweet(1).then((data)=>{
+//     console.log("Tweet",data);
+// }).catch((error)=>{
+//     console.log("Error");
+// })
 
 //user who's id is one wants to update his tweet=> tweet id is 1
 async function updateTweet(tweetid,userId,updatedContent){
@@ -93,8 +93,9 @@ async function deletedTweet(tweetid,userId){
         }
     })
 }
-deletedTweet("2","1").then((data)=>{
-    console.log("Deleted successfully");
-}).catch((error)=>{
-    console.log("error");
-})
+// deletedTweet("2","1").then((data)=>{
+//     console.log("Deleted successfully");
+// }).catch((error)=>{
+//     console.log("error");
+// })
+
