@@ -89,7 +89,7 @@ app.get("/tweet/specificFields/:id", async (req, res) => {
         tweet: {
           select: {
             content: true
-          } 
+          }
         }
       }
     });
