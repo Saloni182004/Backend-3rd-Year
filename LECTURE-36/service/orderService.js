@@ -213,3 +213,20 @@ BTCUSDOrderBook.placeOrder("SELL","LIMIT","1509.00",10,"Saloni");
 
 console.log(BTCUSDOrderBook.getBookSnapshot());
 
+console.log("Placing SELL LIMIT order @1505 (should match existing BUY orders)");
+BTCUSDOrderBook.placeOrder("SELL", "LIMIT", 1505.00, 5, "Sanam");
+console.log(BTCUSDOrderBook.getBookSnapshot());
+console.log("Placing BUY LIMIT order @1508 (should match existing SELL orders)");
+BTCUSDOrderBook.placeOrder("BUY", "LIMIT", 1508.00, 8, "Vanshika");
+console.log(BTCUSDOrderBook.getBookSnapshot());
+
+console.log("Placing BUY MARKET order (should take from best ASK)");
+BTCUSDOrderBook.placeOrder("BUY", "MARKET", null, 15, "Aman");
+console.log(BTCUSDOrderBook.getBookSnapshot());
+
+console.log("Placing SELL MARKET order (should take from best BID)");
+BTCUSDOrderBook.placeOrder("SELL", "MARKET", null, 12, "Isha");
+console.log(BTCUSDOrderBook.getBookSnapshot());
+
+console.log("Final Order Book Snapshot:");
+console.log(BTCUSDOrderBook.getBookSnapshot());
