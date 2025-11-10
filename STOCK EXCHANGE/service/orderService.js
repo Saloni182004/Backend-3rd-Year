@@ -51,11 +51,19 @@ class OrderBook {
 
         if (type === "MARKET") {
             let result = this._marketMatch(order);
-            if (result.remainingQty > 0) {
-                console.log("Order completed: " + result.exectQty + " " + "cancel order: " + result.remainingQty);
+            // if (result.remainingQty > 0) {
+            //     console.log("Order completed: " + result.exectQty + " " + "cancel order: " + result.remainingQty);
+            // }
+            return{
+                book:this.getBookSnapshot(),
+                result
             }
         } else {
             let result = this._limitMatch(order);
+            return{
+                book:this.getBookSnapshot(),
+                result
+            }
         }
     }
 
@@ -166,6 +174,7 @@ class OrderBook {
                 this._sort("SELL");
             }
         }
+        return order;
     }
 
     getBookSnapshot() {
@@ -230,3 +239,5 @@ console.log(BTCUSDOrderBook.getBookSnapshot());
 
 console.log("Final Order Book Snapshot:");
 console.log(BTCUSDOrderBook.getBookSnapshot());
+
+module.exports=OrderBook;
