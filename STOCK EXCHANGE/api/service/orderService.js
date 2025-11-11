@@ -218,7 +218,7 @@ class OrderBook {
         }
     }
 
-    getRecentTrades(limit){
+    getRecentTrades(limit=10){
         return this.trades.slice(0,limit);
     }
 }
