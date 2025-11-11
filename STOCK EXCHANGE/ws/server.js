@@ -1,4 +1,4 @@
-const {webSocketServer, WebSocketServer}=require("ws");
+const {WebSocketServer}=require("ws");
 let {subscriber}=require("../shared/server");
 const wss=new WebSocketServer({port:8080});
 let allSocket=[];
@@ -8,7 +8,7 @@ wss.on("connection",(socket)=>{
     allSocket.push(socket);
     (async function orderBookUpdate(){
         await subscriber.connect();
-    subscriber.subscribe("Book_Update",(message)=>{
+    subscriber.subscribe("Book_update",(message)=>{
         //broadcasting
         let parsedMessage=JSON.parse(message);
         console.log(parsedMessage);
@@ -22,6 +22,6 @@ wss.on("connection",(socket)=>{
 function broadcast(message){
     allSocket.forEach((s)=>{
         let data=JSON.stringify(message)
-        s.send(message);
+        s.send(data);
     })
 }
