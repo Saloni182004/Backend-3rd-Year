@@ -18,3 +18,14 @@ module.exports.postPlaceOrder=async(req,res)=>{
     })
     console.log(response);
 }
+
+module.exports.getOrderBook=async(req,res)=>{
+    let bookSnapShot=ob.getBookSnapshot();
+    return res.json(bookSnapShot);
+}
+
+module.exports.getRecentTrades=async(req,res)=>{
+    let {limit}=req.query;
+    let recentTrades=ob.getRecentTrades(limit);
+    return res.json(recentTrades);
+}

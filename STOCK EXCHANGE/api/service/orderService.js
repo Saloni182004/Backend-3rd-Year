@@ -5,6 +5,7 @@ class OrderBook {
         this.ask = [],
         this._nextId = 1,      //if a function or variable start with _ (private) iska koi kaam nhi h bs ik naming comvention h ki yeh private h
         this.lastTradedPrice = null
+        this.trades=[];        // isse hum descending mein sort krenge
     }
 
     _genOrder() {
@@ -83,6 +84,14 @@ class OrderBook {
             while (order.remainingQty > 0 && askArr.length > 0) {
                 let top = askArr[0];
                 let orderFill = Math.min(order.remainingQty, top.remainingQty);
+                if(orderFill>0){
+                    this.lastTradedPrice=top.price;
+                    this.trades.unshift({
+                            id:Math.floor(Math.random()*1000000),
+                            quantity:orderFill,
+                            price:top.price
+                        })
+                }
 
                 order.exectQty = order.exectQty + orderFill;
                 order.remainingQty = order.remainingQty - orderFill;
@@ -102,6 +111,14 @@ class OrderBook {
             while (order.remainingQty > 0 && bidArr.length > 0) {
                 let top = bidArr[0];
                 let orderFill = Math.min(order.remainingQty, top.remainingQty);
+                if(orderFill>0){
+                    this.lastTradedPrice=top.price;
+                    this.trades.unshift({
+                            id:Math.floor(Math.random()*1000000),
+                            quantity:orderFill,
+                            price:top.price
+                        })
+                }
 
                 order.exectQty = order.exectQty + orderFill;
                 order.remainingQty = order.remainingQty - orderFill;
@@ -126,6 +143,14 @@ class OrderBook {
                 let top = opposite[0];
                 if (order.price >= top.price) {
                     let filledOrder = Math.min(order.remainingQty, top.remainingQty);
+                    if(filledOrder>0){
+                        this.lastTradedPrice=top.price;
+                        this.trades.unshift({
+                            id:Math.floor(Math.random()*1000000),
+                            quantity:filledOrder,
+                            price:top.price
+                        })
+                    }
 
                     order.remainingQty -= filledOrder;
                     order.exectQty += filledOrder;
@@ -153,6 +178,14 @@ class OrderBook {
                 let top = opposite[0];
                 if (order.price <= top.price) {
                     let filledOrder = Math.min(order.remainingQty, top.remainingQty);
+                    if(filledOrder>0){
+                        this.lastTradedPrice=top.price;
+                        this.trades.unshift({
+                            id:Math.floor(Math.random()*1000000),
+                            quantity:filledOrder,
+                            price:top.price
+                        })
+                    }
 
                     order.remainingQty -= filledOrder;
                     order.exectQty += filledOrder;
@@ -183,6 +216,10 @@ class OrderBook {
             bids: this.bids.map((o) => [o.price, o.remainingQty]),
             asks: this.ask.map((o) => [o.price, o.remainingQty])
         }
+    }
+
+    getRecentTrades(limit){
+        return this.trades.slice(0,limit);
     }
 }
 

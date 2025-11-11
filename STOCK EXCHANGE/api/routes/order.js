@@ -1,6 +1,8 @@
 const router=require("express").Router();
-const {postPlaceOrder}=require("../controllers/order");
+const {postPlaceOrder,getOrderBook,getRecentTrades}=require("../controllers/order");
 
-router.post("/",postPlaceOrder);
+router.post("/order",postPlaceOrder);
+router.get("/depth",getOrderBook);
+router.get("/trades",getRecentTrades);
 
 module.exports=router
