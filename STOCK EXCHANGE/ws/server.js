@@ -7,17 +7,15 @@ wss.on("connection",(socket)=>{
     console.log("User connected");
     allSocket.push(socket);
     (async function orderBookUpdate(){
-        await subscriber.connect();
+    await subscriber.connect();
     subscriber.subscribe("Book_update",(message)=>{
         //broadcasting
         let parsedMessage=JSON.parse(message);
         console.log(parsedMessage);
         broadcast(parsedMessage);
     })
-})() // yeh IIFE h immediatelt invoking function iifii-pronunciation
+})() // yeh IIFE h immediately invoking function iifii-pronunciation
 })
-
-
 
 function broadcast(message){
     allSocket.forEach((s)=>{
